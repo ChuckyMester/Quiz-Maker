@@ -1,6 +1,5 @@
 import customtkinter as ctk
 from database import CreateTable
-from tkinter import Toplevel, Menu
 from tkinter import ttk
 
 
@@ -12,12 +11,11 @@ class QuizApp(ctk.CTk):
         self.geometry('600x400')
         self.title('Quiz App')
 
-         # Menu
-        self.menubar = Menu(self)
-        self.config(menu=self.menubar)
-
         # Database connection
         tc = CreateTable()
+        
+        # Game mode variable
+        self.game_mode = '10' # Basic gamemode with 10 questions
 
         # Question label
         self.mode_label = ctk.CTkLabel(self, text='Choose a mode', font=('Arial', 20))
@@ -36,7 +34,7 @@ class QuizApp(ctk.CTk):
         self.view_scores_button = ctk.CTkButton(self.buttons_frame, text="Scores", width=150, height=60, command=lambda: print('hello'))
         self.view_scores_button.place(relx=0.25, rely=0.75, anchor='center')
 
-        self.settings_button = ctk.CTkButton(self.buttons_frame, text="Beállítások", width=150, height=60, command=lambda: print('hello'))
+        self.settings_button = ctk.CTkButton(self.buttons_frame, text="Game mode", width=150, height=60, command=self.game_mode_selection)
         self.settings_button.place(relx=0.75, rely=0.75, anchor='center')
 
         # Run
@@ -103,6 +101,51 @@ class QuizApp(ctk.CTk):
         for entry in self.answer_entries:
             entry.delete(0, 'end')
         self.correct_answer_combobox.set('')
+
+
+    # Game mode selection window
+    def game_mode_selection(self):
+
+        # Hide the main window
+        self.withdraw()
+
+        # Creating the new window
+        game_mode_window = ctk.CTkToplevel()
+        game_mode_window.geometry('600x400')
+        game_mode_window.minsize(width=600, height=400)
+        game_mode_window.title('Select game mode')
+
+        # Question label
+        game_mode_label = ctk.CTkLabel(game_mode_window, text='Choose a game mode', font=('Arial', 20))
+        game_mode_label.pack(pady=20)
+
+        # Buttons
+        buttons_frame = ctk.CTkFrame(game_mode_window)
+        buttons_frame.place(relwidth=0.75, relheight=0.6, relx=0.5, rely=0.5, anchor='center')
+
+        mode1_button = ctk.CTkButton(buttons_frame, text="10 questions", width=150, height=60, command=lambda: self.game_mode_setter('10', game_mode_window))
+        mode1_button.place(relx=0.25, rely=0.25, anchor='center')
+
+        mode2_button = ctk.CTkButton(buttons_frame, text="20 questions", width=150, height=60, command=lambda: self.game_mode_setter('20', game_mode_window))
+        mode2_button.place(relx=0.75, rely=0.25, anchor='center')
+
+        mode3_button = ctk.CTkButton(buttons_frame, text="30 questions", width=150, height=60, command=lambda: self.game_mode_setter('30', game_mode_window))
+        mode3_button.place(relx=0.25, rely=0.75, anchor='center')
+
+        mode4_button = ctk.CTkButton(buttons_frame, text="Extreme", width=150, height=60, command=lambda: self.game_mode_setter('xtreme', game_mode_window))
+        mode4_button.place(relx=0.75, rely=0.75, anchor='center')
+
+        # Back to main menu button
+        close_button = ctk.CTkButton(game_mode_window, text="Go back", width=80, command=lambda: self.close_and_show(game_mode_window))
+        close_button.place(relx=0.03, rely=0.97, anchor='sw')
+
+
+    # Game mode setter
+    def game_mode_setter(self, mode, window):
+        self.game_mode = mode
+        
+        # Go back to main menu after choosing the game mode
+        self.close_and_show(window)
 
 
     # Close window and go back to main menu
