@@ -29,6 +29,9 @@ class CreateTable():
         cursor.execute("INSERT INTO questions (question, answer1, answer2, answer3, answer4, correct_answer) VALUES (?, ?, ?, ?, ?, ?)",
           (question, answer1, answer2, answer3, answer4, correct_answer))
         
+        # Save the changes
+        connect.commit()
+        
         # Close connection
         connect.close()
 

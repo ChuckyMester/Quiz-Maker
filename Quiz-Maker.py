@@ -12,7 +12,7 @@ class QuizApp(ctk.CTk):
         self.title('Quiz App')
 
         # Database connection
-        tc = CreateTable()
+        self.connected_database = CreateTable()
         
         # Game mode variable
         self.game_mode = '10' # Basic gamemode with 10 questions
@@ -52,6 +52,9 @@ class QuizApp(ctk.CTk):
         manage_questions_window.geometry('800x400')
         manage_questions_window.minsize(width=800, height=400)
         manage_questions_window.title('Manage questions')
+
+        # If the user closes this toplevel window
+        manage_questions_window.protocol("WM_DELETE_WINDOW", self.on_close)
 
         # Question entry
         self.question_entry = ctk.CTkEntry(manage_questions_window, placeholder_text="Írja be a kérdést itt", width=400)
@@ -94,7 +97,12 @@ class QuizApp(ctk.CTk):
             print("Missing Data!")
             return
 
-        print(question_text, answers, correct_answer)
+        # Adding entries to the database
+        _, correct_num = correct_answer.split(' ')
+        correct_answer = answers[int(correct_num) - 1]
+
+        self.connected_database.insert_question(question_text, *answers, correct_answer)
+
 
         # Reset all field for new inputs
         self.question_entry.delete(0, 'end')
@@ -114,6 +122,9 @@ class QuizApp(ctk.CTk):
         game_mode_window.geometry('600x400')
         game_mode_window.minsize(width=600, height=400)
         game_mode_window.title('Select game mode')
+
+        # If the user closes this toplevel window
+        game_mode_window.protocol("WM_DELETE_WINDOW", self.on_close)
 
         # Question label
         game_mode_label = ctk.CTkLabel(game_mode_window, text='Choose a game mode', font=('Arial', 20))
@@ -155,6 +166,13 @@ class QuizApp(ctk.CTk):
         new_window.destroy()
         # Show the main window
         self.deiconify()
+
+    
+    # Close the application where the user exits a toplevel window
+    def on_close(self):
+
+        # Close the application
+        self.destroy()
 
 
         
