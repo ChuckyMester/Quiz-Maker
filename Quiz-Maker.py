@@ -25,7 +25,7 @@ class QuizApp(ctk.CTk):
         self.buttons_frame = ctk.CTkFrame(self)
         self.buttons_frame.place(relwidth=0.75, relheight=0.6, relx=0.5, rely=0.5, anchor='center')
 
-        self.new_game_button = ctk.CTkButton(self.buttons_frame, text="New game", width=150, height=60, command=lambda: print('hello'))
+        self.new_game_button = ctk.CTkButton(self.buttons_frame, text="New game", width=150, height=60, command=self.new_game)
         self.new_game_button.place(relx=0.25, rely=0.25, anchor='center')
 
         self.manage_questions_button = ctk.CTkButton(self.buttons_frame, text="Manage questions", width=150, height=60, command=self.open_manage_questions)
@@ -149,6 +149,22 @@ class QuizApp(ctk.CTk):
         # Back to main menu button
         close_button = ctk.CTkButton(game_mode_window, text="Go back", width=80, command=lambda: self.close_and_show(game_mode_window))
         close_button.place(relx=0.03, rely=0.97, anchor='sw')
+
+
+    # New Game window
+    def new_game(self):
+    
+        # Hide the main window
+        self.withdraw()
+
+        # Creating the new window
+        game_mode_window = ctk.CTkToplevel()
+        game_mode_window.geometry('600x400')
+        game_mode_window.minsize(width=600, height=400)
+        game_mode_window.title('Quiz')
+
+        # If the user closes this toplevel window
+        game_mode_window.protocol("WM_DELETE_WINDOW", self.on_close)
 
 
     # Game mode setter
