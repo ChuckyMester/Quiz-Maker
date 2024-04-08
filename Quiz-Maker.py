@@ -168,22 +168,31 @@ class QuizApp(ctk.CTk):
         game_mode_window.protocol("WM_DELETE_WINDOW", self.on_close)
 
         question_list = self.connected_database.fetch_questions()
+        self.questions = None
+
+        # Questions indexing
+        self.current_question_index = 0
+
+        # Show the first question
+        self.next_question() # TODO: Implement the function
 
         # Checking game mode
         match self.game_mode:
 
             # 10 questions mode
             case '10':
-                random_questions = random.sample(question_list, 4)
-                print(random_questions)
+                self.questions = random.sample(question_list, 10)
+                print(len(self.questions))
 
             # 20 questions mode
             case '20':
-                random_questions = random.sample(question_list, 20)
+                self.questions = random.sample(question_list, 20)
+                print(len(self.questions))
 
             # 30 questions mode
             case '30':
-                random_questions = random.sample(question_list, 30)
+                self.questions = random.sample(question_list, 30)
+                print(len(self.questions))
 
             # Extreme mode
             case 'xtreme':
