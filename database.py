@@ -35,3 +35,31 @@ class CreateTable():
         # Close connection
         connect.close()
 
+
+    # Fetching questions
+    def fetch_questions(self):
+        
+        # Creating connection
+        conn = sqlite3.connect('quiz.db')
+        cursor = conn.cursor()
+
+        # SQL command
+        cursor.execute('''SELECT id, question, answer1, answer2, answer3, answer4, correct_answer FROM questions''')
+
+        # Adding all the questions to a list
+        questions_list = []
+        for row in cursor.fetchall():
+            question_id, question_text, answer1, answer2, answer3, answer4, correct_answer = row
+            question_dict = {
+                "id": question_id,
+                "question": question_text,
+                "answers": [answer1, answer2, answer3, answer4],
+                "correct_answer": correct_answer
+            }
+            questions_list.append(question_dict)
+        
+        # Closing connection
+        conn.close()
+        
+        # Returning the question list
+        return questions_list

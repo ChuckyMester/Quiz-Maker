@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from database import CreateTable
 from tkinter import ttk
+import random
 
 
 class QuizApp(ctk.CTk):
@@ -165,6 +166,32 @@ class QuizApp(ctk.CTk):
 
         # If the user closes this toplevel window
         game_mode_window.protocol("WM_DELETE_WINDOW", self.on_close)
+
+        question_list = self.connected_database.fetch_questions()
+
+        # Checking game mode
+        match self.game_mode:
+
+            # 10 questions mode
+            case '10':
+                random_questions = random.sample(question_list, 4)
+                print(random_questions)
+
+            # 20 questions mode
+            case '20':
+                random_questions = random.sample(question_list, 20)
+
+            # 30 questions mode
+            case '30':
+                random_questions = random.sample(question_list, 30)
+
+            # Extreme mode
+            case 'xtreme':
+                random_questions = random.sample(question_list, 30)
+
+        # Back to main menu button
+        close_button = ctk.CTkButton(game_mode_window, text="Go back", width=80, command=lambda: self.close_and_show(game_mode_window))
+        close_button.place(relx=0.03, rely=0.97, anchor='sw')
 
 
     # Game mode setter
