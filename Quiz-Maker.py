@@ -2,6 +2,7 @@ import customtkinter as ctk
 from database import CreateTable
 from tkinter import ttk
 import random
+import time
 
 
 class QuizApp(ctk.CTk):
@@ -170,6 +171,9 @@ class QuizApp(ctk.CTk):
         question_list = self.connected_database.fetch_questions()
         self.questions = None
 
+        # Score Variables
+        self.correct_answers = 0
+
         # Checking game mode
         match self.game_mode:
 
@@ -220,17 +224,17 @@ class QuizApp(ctk.CTk):
             answers_frame.pack(pady=(10, 0),fill='both', expand=True)
             
             # Answer buttons
-            answer_button1 = ctk.CTkButton(answers_frame, text=self.current_answers[0], height=50, command=lambda btn=answer_button1: self.check_answer(self.current_answers[0], current_question['correct_answer'], btn))
-            answer_button1.pack(fill='x', padx='7', pady='3')
+            self.answer_button1 = ctk.CTkButton(answers_frame, text=self.current_answers[0], height=50, command=lambda: self.check_answer(self.current_answers[0], current_question['correct_answer'], 'answer1'))
+            self.answer_button1.pack(fill='x', padx='7', pady='3')
 
-            answer_button2 = ctk.CTkButton(answers_frame, text=self.current_answers[1], height=50, command=lambda btn=answer_button1: self.check_answer(self.current_answers[1], current_question['correct_answer'], btn))
-            answer_button2.pack(fill='x', padx='7', pady='3')
+            self.answer_button2 = ctk.CTkButton(answers_frame, text=self.current_answers[1], height=50, command=lambda: self.check_answer(self.current_answers[1], current_question['correct_answer'], 'answer2'))
+            self.answer_button2.pack(fill='x', padx='7', pady='3')
 
-            answer_button3 = ctk.CTkButton(answers_frame, text=self.current_answers[2], height=50, command=lambda btn=answer_button1: self.check_answer(self.current_answers[2], current_question['correct_answer'], btn))
-            answer_button3.pack(fill='x', padx='7', pady='3')
+            self.answer_button3 = ctk.CTkButton(answers_frame, text=self.current_answers[2], height=50, command=lambda: self.check_answer(self.current_answers[2], current_question['correct_answer'], 'answer3'))
+            self.answer_button3.pack(fill='x', padx='7', pady='3')
 
-            answer_button4 = ctk.CTkButton(answers_frame, text=self.current_answers[3], height=50, command=lambda btn=answer_button1: self.check_answer(self.current_answers[3], current_question['correct_answer'], btn))
-            answer_button4.pack(fill='x', padx='7', pady='3')
+            self.answer_button4 = ctk.CTkButton(answers_frame, text=self.current_answers[3], height=50, command=lambda: self.check_answer(self.current_answers[3], current_question['correct_answer'], 'answer4'))
+            self.answer_button4.pack(fill='x', padx='7', pady='3')
 
             # Current question index
             self.current_question_index += 1
@@ -240,16 +244,46 @@ class QuizApp(ctk.CTk):
             close_button.place(relx=0.03, rely=0.97, anchor='sw')
 
         else:
-            # Minden kérdés megjelenítve, kezelheted ezt az esetet
-            ... 
+            for widget in self.game_mode_window.winfo_children():
+                widget.destroy()
+
+            score_label = ctk.CTkLabel(self.game_mode_window, text=f'{self.correct_answers}/{self.current_question_index}')
+            score_label.pack()
 
     # Checking the user answer
-    def check_answer(self, selected_answer, correct_answer, pressed_button):
-        if selected_answer == correct_answer:
-            print(pressed_button)
-        else:
-            print(pressed_button)
+    def check_answer(self, selected_answer, correct_answer, selected_button):
 
+        match selected_button:
+
+            case 'answer1':
+                if selected_answer == correct_answer:
+                    self.answer_button1.configure(fg_color="#33BC28", hover='#2DA024')
+                    self.correct_answers += 1
+                else:
+                    self.answer_button1.configure(fg_color="#CE3824", hover='#A82B1B')
+
+            case 'answer2':
+                if selected_answer == correct_answer:
+                    self.answer_button2.configure(fg_color="#33BC28", hover='#2DA024')
+                    self.correct_answers += 1
+                else:
+                    self.answer_button2.configure(fg_color="#CE3824", hover='#A82B1B')
+
+            case 'answer3':
+                if selected_answer == correct_answer:
+                    self.answer_button3.configure(fg_color="#33BC28", hover='#2DA024')
+                    self.correct_answers += 1
+                else:
+                    self.answer_button3.configure(fg_color="#CE3824", hover='#A82B1B')
+
+            case 'answer4':
+                if selected_answer == correct_answer:
+                    self.answer_button4.configure(fg_color="#33BC28", hover='#2DA024')
+                    self.correct_answers += 1
+                else:
+                    self.answer_button4.configure(fg_color="#CE3824", hover='#A82B1B')
+
+        self.game_mode_window.after(1000, self.next_question)
 
     # Game mode setter
     def game_mode_setter(self, mode, window):
