@@ -161,8 +161,8 @@ class QuizApp(ctk.CTk):
 
         # Creating the new window
         self.game_mode_window = ctk.CTkToplevel()
-        self.game_mode_window.geometry('600x400')
-        self.game_mode_window.minsize(width=600, height=400)
+        self.game_mode_window.geometry('650x420')
+        self.game_mode_window.minsize(width=650, height=420)
         self.game_mode_window.title('Quiz')
 
         # If the user closes this toplevel window
@@ -180,17 +180,14 @@ class QuizApp(ctk.CTk):
             # 10 questions mode
             case '10':
                 self.questions = random.sample(question_list, 10)
-                print(len(self.questions))
 
             # 20 questions mode
             case '20':
                 self.questions = random.sample(question_list, 20)
-                print(len(self.questions))
 
             # 30 questions mode
             case '30':
                 self.questions = random.sample(question_list, 30)
-                print(len(self.questions))
 
             # Extreme mode
             case 'xtreme':
@@ -203,7 +200,7 @@ class QuizApp(ctk.CTk):
         self.next_question()
 
 
-    # Question changin and displaying method
+    # Question changing and displaying method
     def next_question(self):
 
         if self.current_question_index < len(self.questions):
@@ -214,6 +211,11 @@ class QuizApp(ctk.CTk):
             # Destroying the old widgets to show the new ones
             for widget in self.game_mode_window.winfo_children():
                 widget.destroy()
+
+            # Progress bar
+            progressbar = ctk.CTkProgressBar(self.game_mode_window, orientation="horizontal", width=250, height=12)
+            progressbar.set(self.current_question_index / (len(self.questions) - 1)) # -1 because we are showing the current question on the progress bar
+            progressbar.pack()
 
             # Question label
             question_label = ctk.CTkLabel(self.game_mode_window, text=current_question["question"])
@@ -240,18 +242,28 @@ class QuizApp(ctk.CTk):
             self.current_question_index += 1
 
             # Back to main menu button
-            close_button = ctk.CTkButton(self.game_mode_window, text="Go back", width=80, command=lambda: self.close_and_show(self.game_mode_window))
-            close_button.place(relx=0.03, rely=0.97, anchor='sw')
+            self.close_button = ctk.CTkButton(self.game_mode_window, text="Go back", width=80, command=lambda: self.close_and_show(self.game_mode_window))
+            self.close_button.place(relx=0.03, rely=0.97, anchor='sw')
 
         else:
             for widget in self.game_mode_window.winfo_children():
                 widget.destroy()
 
-            score_label = ctk.CTkLabel(self.game_mode_window, text=f'{self.correct_answers}/{self.current_question_index}')
-            score_label.pack()
+            score_label = ctk.CTkLabel(self.game_mode_window, text=f'{self.correct_answers}/{self.current_question_index}', font=('Helvetica', 30))
+            score_label.place(relx=0.5, rely=0.45, anchor='center')
+
+            back_button = ctk.CTkButton(self.game_mode_window, text="Go back to main menu", width=200, height=30, font=('Helvetica', 18), command=lambda: self.close_and_show(self.game_mode_window))
+            back_button.place(relx=0.5, rely=0.55, anchor='center')
+
 
     # Checking the user answer
     def check_answer(self, selected_answer, correct_answer, selected_button):
+
+        # Disable all the buttons for this method
+        self.answer_button1.configure(state="disabled")
+        self.answer_button2.configure(state="disabled")
+        self.answer_button3.configure(state="disabled")
+        self.answer_button4.configure(state="disabled")
 
         match selected_button:
 
@@ -283,7 +295,8 @@ class QuizApp(ctk.CTk):
                 else:
                     self.answer_button4.configure(fg_color="#CE3824", hover='#A82B1B')
 
-        self.game_mode_window.after(1000, self.next_question)
+        self.game_mode_window.after(500, self.next_question)
+
 
     # Game mode setter
     def game_mode_setter(self, mode, window):
