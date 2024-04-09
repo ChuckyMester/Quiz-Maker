@@ -159,22 +159,16 @@ class QuizApp(ctk.CTk):
         self.withdraw()
 
         # Creating the new window
-        game_mode_window = ctk.CTkToplevel()
-        game_mode_window.geometry('600x400')
-        game_mode_window.minsize(width=600, height=400)
-        game_mode_window.title('Quiz')
+        self.game_mode_window = ctk.CTkToplevel()
+        self.game_mode_window.geometry('600x400')
+        self.game_mode_window.minsize(width=600, height=400)
+        self.game_mode_window.title('Quiz')
 
         # If the user closes this toplevel window
-        game_mode_window.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.game_mode_window.protocol("WM_DELETE_WINDOW", self.on_close)
 
         question_list = self.connected_database.fetch_questions()
         self.questions = None
-
-        # Questions indexing
-        self.current_question_index = 0
-
-        # Show the first question
-        self.next_question() # TODO: Implement the function
 
         # Checking game mode
         match self.game_mode:
@@ -198,9 +192,63 @@ class QuizApp(ctk.CTk):
             case 'xtreme':
                 random_questions = random.sample(question_list, 30)
 
-        # Back to main menu button
-        close_button = ctk.CTkButton(game_mode_window, text="Go back", width=80, command=lambda: self.close_and_show(game_mode_window))
-        close_button.place(relx=0.03, rely=0.97, anchor='sw')
+        # Questions indexing
+        self.current_question_index = 0
+
+        # Show the first question
+        self.next_question()
+
+
+    # Question changin and displaying method
+    def next_question(self):
+
+        if self.current_question_index < len(self.questions):
+            # Get the current question with answers
+            current_question = self.questions[self.current_question_index]
+            self.current_answers = current_question['answers']
+
+            # Destroying the old widgets to show the new ones
+            for widget in self.game_mode_window.winfo_children():
+                widget.destroy()
+
+            # Question label
+            question_label = ctk.CTkLabel(self.game_mode_window, text=current_question["question"])
+            question_label.pack(pady=(20, 20))
+
+            # Answers frame
+            answers_frame = ctk.CTkFrame(self.game_mode_window)
+            answers_frame.pack(pady=(10, 0),fill='both', expand=True)
+            
+            # Answer buttons
+            answer_button1 = ctk.CTkButton(answers_frame, text=self.current_answers[0], height=50, command=lambda btn=answer_button1: self.check_answer(self.current_answers[0], current_question['correct_answer'], btn))
+            answer_button1.pack(fill='x', padx='7', pady='3')
+
+            answer_button2 = ctk.CTkButton(answers_frame, text=self.current_answers[1], height=50, command=lambda btn=answer_button1: self.check_answer(self.current_answers[1], current_question['correct_answer'], btn))
+            answer_button2.pack(fill='x', padx='7', pady='3')
+
+            answer_button3 = ctk.CTkButton(answers_frame, text=self.current_answers[2], height=50, command=lambda btn=answer_button1: self.check_answer(self.current_answers[2], current_question['correct_answer'], btn))
+            answer_button3.pack(fill='x', padx='7', pady='3')
+
+            answer_button4 = ctk.CTkButton(answers_frame, text=self.current_answers[3], height=50, command=lambda btn=answer_button1: self.check_answer(self.current_answers[3], current_question['correct_answer'], btn))
+            answer_button4.pack(fill='x', padx='7', pady='3')
+
+            # Current question index
+            self.current_question_index += 1
+
+            # Back to main menu button
+            close_button = ctk.CTkButton(self.game_mode_window, text="Go back", width=80, command=lambda: self.close_and_show(self.game_mode_window))
+            close_button.place(relx=0.03, rely=0.97, anchor='sw')
+
+        else:
+            # Minden kérdés megjelenítve, kezelheted ezt az esetet
+            ... 
+
+    # Checking the user answer
+    def check_answer(self, selected_answer, correct_answer, pressed_button):
+        if selected_answer == correct_answer:
+            print(pressed_button)
+        else:
+            print(pressed_button)
 
 
     # Game mode setter
